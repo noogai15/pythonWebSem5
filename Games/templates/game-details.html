@@ -1,0 +1,39 @@
+{% block title %}Game detail{% endblock %}
+
+{% block content %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Game/styles.css' %}">
+
+    <h2>Game detail</h2>
+
+    <table>
+        <tr>
+            <td><b>Title:</b></td>
+            <td>{{ this_game.name }}<br></td>
+        </tr>
+        <tr>
+            <td><b>Description:</b></td>
+            <td>{{ this_game.desc }}<br></td>
+        </tr>
+        <tr>
+            <td><b>Creator:</b></td>
+            <td>{{ this_game.creator }}<br></td>
+        </tr>
+        <tr>
+            <td><b>Genre:</b></td>
+            <td>{{ this_game.genre }}<br></td>
+        </tr>
+        <tr>
+            <td><b>Age rating</b></td>
+            <td>{{ this_game.age_rating }}<br></td>
+        </tr>
+        <tr>
+            <td><b>Date created:</b></td>
+            <td>{{ this_game.created_at }}<br></td>
+        </tr>
+    </table>
+       <a class="btn btn-primary" href={% url "game-delete" this_game.id %}>Delete</a>
+
+    <br>
+    <a href="{% url 'game_list' %}">Back to all games</a>
+{% endblock %}
