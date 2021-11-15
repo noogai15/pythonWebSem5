@@ -17,7 +17,7 @@ def game_detail(request, **kwargs):
     game_id = kwargs["pk"]
     this_game = Game.objects.get(id=game_id)
     context = {"this_game": this_game}
-    return render(request, "game-detail.html", context)
+    return render(request, "game-details.html", context)
 
 
 def game_create(request):
