@@ -12,9 +12,6 @@
     <ul>
         {% for game in all_games %}
             <a href="{{ game.id }}/"><b>{{ game.name }}</b></a><br>
-            <!-- Alternative link:
-        <a href="{% url 'game_details' game.id %}">
-        -->
             <li>Developed by: {{ game.creator }}</li>
             <li>Age rating: {{ game.get_age_rating_display }}
             <li>Genre: {{ game.get_genre_display }}
