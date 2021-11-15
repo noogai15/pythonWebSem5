@@ -9,7 +9,7 @@ from .models import Game
 def game_list(request):
     all_games = Game.objects.all
     context = {"all_games": all_games}
-    return render(request, "game_list.html", context)
+    return render(request, "game-list.html", context)
 
 
 def game_detail(request, **kwargs):
@@ -17,7 +17,7 @@ def game_detail(request, **kwargs):
     game_id = kwargs["pk"]
     this_game = Game.objects.get(id=game_id)
     context = {"this_game": this_game}
-    return render(request, "game_details.html", context)
+    return render(request, "game-detail.html", context)
 
 
 def game_create(request):
@@ -30,11 +30,11 @@ def game_create(request):
             print("I saved a new game")
         else:
             pass
-        return redirect("game_list")
+        return redirect("game-list")
     else:
         create_form = GameForms()
         context = {"form": create_form}
-        return render(request, "game_create.html", context)
+        return render(request, "game-create.html", context)
 
 
 def game_delete(request, **kwargs):
@@ -48,4 +48,4 @@ def game_delete(request, **kwargs):
         this_game.delete()
         return redirect("game_list")
     context = {"this_game": this_game}
-    return render(request, "deleteConfirm.html", context)
+    return render(request, "game-delete.html", context)
