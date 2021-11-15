@@ -1,0 +1,53 @@
+{% block title %}Add game{% endblock %}
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
+{% endblock %}
+
+{% block logged_in_content %}
+    {#    {% if  game.user.is_authenticated %}#}
+    <h2>Add game</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <!-- {{ form.as_table }} -->
+        {% comment %} {{ form.as_p }} {% endcomment %}
+        <div className="form-field">
+            <label for="{{ form.name.id}}">Name: </label>
+            {{ form.name }}
+        </div>
+
+        <div className="form-field">
+            <label for="{{ form.desc.id}}">Description: </label>
+            {{ form.desc }}
+        </div>
+
+        <div className="form-field">
+            <label for="{{ form.genre.id}}">Genre: </label>
+            {{ form.genre }}
+        </div>
+
+        <div className="form-field">
+            <label for="{{ form.age_rating.id}}">Age rating: </label>
+            {{ form.age_rating }}
+        </div>
+
+        <div className="form-field">
+            <label for="{{ form.creator.id}}">Creator: </label>
+            {{ form.creator }}
+        </div>
+
+        <div className="form-field">
+            <label for="{{ form.created_at.id}}">Created at: </label>
+            {{ form.created_at }}
+        </div>
+        <br>
+
+        <button type="submit">Add game</button> 
+
+    </form>
+    {#    {% else %}#}
+    {#        <p>You must log in to add games</p>#}
+    {#        <a href="{% url 'login' %}">Login</a>#}
+    {#    {% endif %}#}
+{% endblock %}
+

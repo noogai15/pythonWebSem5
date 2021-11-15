@@ -1,0 +1,28 @@
+{% extends "home.html" %}
+
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
+{% endblock %}
+
+{% block title %}Games list{% endblock %}
+
+{% block content %}
+    <h2>Games list</h2>
+    <ul>
+        {% for game in all_games %}
+            <a href="{{ game.id }}/"><b>{{ game.name }}</b></a><br>
+            <!-- Alternative link:
+        <a href="{% url 'game_details' game.id %}">
+        -->
+            <li>Developed by: {{ game.creator }}</li>
+            <li>Age rating: {{ game.get_age_rating_display }}
+            <li>Genre: {{ game.get_genre_display }}
+            <li>{{ game.get_desc_preview }}
+            <br>
+            <br>
+        {% endfor %}
+    </ul>
+
+    <a href={% url 'game-create' %}>Add a new game</a><br>
+{% endblock %}

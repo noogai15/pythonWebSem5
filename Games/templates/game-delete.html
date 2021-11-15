@@ -1,0 +1,9 @@
+{% block content %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
+    <form method="post">{% csrf_token %}
+        <p>Are you sure you want to delete {{ object }}?</p>
+        <input type="submit" value="Confirm">
+    </form>
+
+{% endblock %}
