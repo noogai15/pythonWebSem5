@@ -1,3 +1,7 @@
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
@@ -51,23 +55,98 @@ def game_detail(request, **kwargs):
     comments = Comment.objects.filter(game=game)
     context = {'this_game': game,
                'commented_already': commented_already,
-               'comments_for_that_one_game': comments,
+               'all_comments': comments,
                'upvotes': game.get_upvotes_count(),
                'downvotes': game.get_downvotes_count(),
                'comment_form': CommentForm}
     return render(request, 'game-detail.html', context)
 
+# def vote(request, pk: str, fk: str, up_or_down: str):
+#     game = Game.objects.get(id=int(game_id))
+#     comment = Comment.objects.get(id=int(fk))
+#     user = request.user
+#     all_comments = Comment.objects.filter(game=game)
+#     print(comment)
+#     commented_already = Comment.objects.filter(game=game, user=user).exists()
+#
+#     game.vote(user, up_or_down)
+#     voted_already = Vote.objects.filter(comment=comment, user=user).exists()
+#
+#     if voted_already:
+#         print("VOTE CHECK")
+#
+#     context = {
+#         "this_game": game,
+#         "voted_already": voted_already,
+#         "all_comments": all_comments,
+#         'upvotes': game.get_upvotes_count(),
+#         'downvotes': game.get_downvotes_count(),
+#         "commented_already": commented_already
+#
+#     }
+#     return render(request, "game-detail.html", context)
 
-def vote(request, pk: str, up_or_down: str):
+def vote(request, pk: str, fk: str, up_or_down: str):
     game = Game.objects.get(id=int(pk))
+    comment = Comment.objects.get(id=int(fk))
+    print(fk)
     user = request.user
+    all_comments = Comment.objects.filter(game=game)
+    print(comment)
+    commented_already = Comment.objects.filter(game=game, user=user).exists()
+
     game.vote(user, up_or_down)
-    return redirect('game-detail', pk=pk)
+    voted_already = Vote.objects.filter(comment=comment, user=user).exists()
+    if voted_already:
+        print("VOTE CHECK PASSED")
+    else:
+        print("VOTE CHECK FAILED")
+
+
     context = {
-        "this_game": this_game,
-               }
+        "this_game": game,
+        "voted_already": voted_already,
+        "all_comments": all_comments,
+        'upvotes': game.get_upvotes_count(),
+        'downvotes': game.get_downvotes_count(),
+        "commented_already": commented_already
+
+    }
     return render(request, "game-detail.html", context)
 
+def game_detail_pdf(request, pk: str):
+    # CREATE BYTESTREAM BUFFER
+    buf = io.BytesIO();
+    # CREATE CANVAS
+    c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+    # CREATE TEXTOBJ
+    txtobj = c.beginText()
+    txtobj.setTextOrigin(inch, inch)
+    txtobj.setFont("Helvetica", 14)
+    # ADD LINES OF TEXT
+    game = Game.objects.get(id=int(pk))
+    lines = ["Game: " + game.name,
+             "Description " + game.desc,
+             "Creator: " + game.creator,
+             "Genre: " + game.genre,
+             "Age Rating: " + str(game.age_rating),
+             "Created At: " + str(game.created_at),
+             "Price: " + game.price ]
+             # "Image " + game.image + "\n"]
+    # txt = ["Game: " + game.name + "Description: " + game.desc + "Creator: " + game.creator];
+    # game_detail_pdf(txt)
+    # LOOP
+    for line in lines:
+        txtobj.textLine(line)
+
+    # FINISH UP
+    c.drawText(txtobj)
+    c.showPage()
+    c.save()
+    buf.seek(0)
+
+    # RETURN SMTH
+    return FileResponse(buf, as_attachment=True, filename='venue.pdf')
 
 def game_create(request):
     if request.method == "POST":
