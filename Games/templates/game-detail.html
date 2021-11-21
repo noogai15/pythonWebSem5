@@ -2,7 +2,7 @@
 
 {% block content %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'Game/styles.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
 
 <h2>Game detail</h2>
 
@@ -69,7 +69,8 @@
         <form method="POST">
             {% csrf_token %}
             {{ comment_form.as_p }}
-            <button type="submit" onclick="location = self.location.href;">Add comment</button> {# onclick="location = self.location.href;" #}
+            <button type="submit" onclick="window.location.reload()">Add comment</button> {# onclick="location = self.location.href;" #}
+
         </form>
     {% endif %}
 
