@@ -1,25 +1,31 @@
 {% extends "home.html" %}
 
 {% block css %}
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
 {% endblock %}
 
 {% block title %}Games list{% endblock %}
 
 {% block content %}
-    <h2>Games list</h2>
-    <ul>
-        {% for game in all_games %}
-            <a href="{{ game.id }}/"><b>{{ game.name }}</b></a><br>
-            <li>Developed by: {{ game.creator }}</li>
-            <li>Age rating: {{ game.get_age_rating_display }}
-            <li>Genre: {{ game.get_genre_display }}
-            <li>{{ game.get_desc_preview }}
-            <br>
-            <br>
-        {% endfor %}
-    </ul>
+<h2>Games list</h2>
+<ul>
+    {% for game in all_games %}
+    {# <a href="{%  url 'game_detail' game.id %}/"> <b>{{ game.name }}</b><br> </a> #}
+    <li> <a href="{% url 'game-detail' game.id %}"> {{ game.name }} </a></li>
+    <li>Developed by: {{ game.creator }}</li>
+    <li>Age rating: {{ game.get_age_rating_display }}
+    <li>Genre: {{ game.get_genre_display }}
+    <li>{{ game.get_desc_preview }}
+    <li>{{ game.price }}
+    <li>
+        {% if game.image %}
+        <img src="{{ game.image.url }}" height="150" width="150">
+        {#<a h ref="{{ myuser.some_file.url }}">Some uploaded file</a><br> #} <br>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
 
-    <a href={% url 'game-create' %}>Add a new game</a><br>
+<a href={% url 'game-create' %}>Add a new game</a><br>
 {% endblock %}

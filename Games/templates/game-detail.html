@@ -1,39 +1,81 @@
 {% block title %}Game detail{% endblock %}
 
 {% block content %}
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'Game/styles.css' %}">
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'Game/styles.css' %}">
 
-    <h2>Game detail</h2>
+<h2>Game detail</h2>
 
-    <table>
-        <tr>
-            <td><b>Title:</b></td>
-            <td>{{ this_game.name }}<br></td>
-        </tr>
-        <tr>
-            <td><b>Description:</b></td>
-            <td>{{ this_game.desc }}<br></td>
-        </tr>
-        <tr>
-            <td><b>Creator:</b></td>
-            <td>{{ this_game.creator }}<br></td>
-        </tr>
-        <tr>
-            <td><b>Genre:</b></td>
-            <td>{{ this_game.genre }}<br></td>
-        </tr>
-        <tr>
-            <td><b>Age rating</b></td>
-            <td>{{ this_game.age_rating }}<br></td>
-        </tr>
-        <tr>
-            <td><b>Date created:</b></td>
-            <td>{{ this_game.created_at }}<br></td>
-        </tr>
-    </table>
-       <a class="btn btn-primary" href={% url "game-delete" this_game.id %}>Delete</a>
+<table>
+    <tr>
+        <td><b>Title:</b></td>
+        <td>{{ this_game.name }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Description:</b></td>
+        <td>{{ this_game.desc }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Creator:</b></td>
+        <td>{{ this_game.creator }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Genre:</b></td>
+        <td>{{ this_game.genre }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Age rating</b></td>
+        <td>{{ this_game.age_rating }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Date created:</b></td>
+        <td>{{ this_game.created_at }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Price:</b></td>
+        <td>{{ this_game.price }}<br></td>
+    </tr>
+   <tr>
+        <td><b>Image:</b></td>
+        <td>
+        {% if this_game.image %}
+        <img src="{{ this_game.image.url }}" height="150" width="150">
+        {% endif %}
+        </td>
+    </tr>
+</table>
 
+        <span style="color: darkgreen">{{ upvotes }}</span>
+        <a href="{% url 'game-vote' this_game.id 'up' %}" style="text-decoration: none">
+        <img src="{% static 'Games/arrow_up.png' %}" height="20" width="20">
+        </a>
+    &nbsp;&nbsp;&nbsp;
+        <span style="color: crimson">{{ downvotes }}</span>
+        <a href="{% url 'game-vote' this_game.id 'down' %}" style="text-decoration: none">
+        <img src="{% static 'Games/arrow_down.png' %}" height="20" width="20">
+        </a>
+    <br><br>
+
+
+
+    {% for comment in comments_for_that_one_game %}
+        <b style="color: darkgreen">{{ comment.user.username }} on {{ comment.timestamp }}</b><br>
+        {{ comment.text }}<br><br>
+    {% endfor %}
     <br>
-    <a href="{% url 'game_list' %}">Back to all games</a>
+
+    {% if not commented_already %}
+        <b style="color: crimson">Do you have a comment for this game?</b><br>
+        <form method="POST">
+            {% csrf_token %}
+            {{ comment_form.as_p }}
+            <button type="submit" onclick="location = self.location.href;">Add comment</button> {# onclick="location = self.location.href;" #}
+        </form>
+    {% endif %}
+
+
+    <a class="btn btn-primary" href={% url "game-delete" this_game.id %}>Delete</a>
+
+<br>
+<a href="{% url 'game-list' %}">Back to all games</a>
 {% endblock %}

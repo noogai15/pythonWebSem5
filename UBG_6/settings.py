@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,8 +26,7 @@ SECRET_KEY = "django-insecure-rzo=4c@w5)on737l+q32sh^jhjyn(y_^b-kxkp)67c8grmii5k
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["noogai15.pythonanywhere.com"]
-
+ALLOWED_HOSTS = ["noogai15.pythonanywhere.com", "127.0.0.1", "localhost"]
 
 # Application definition
 
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "Games.apps.GamesConfig",
+    "Useradmin.apps.UseradminConfig",
 ]
 
 MIDDLEWARE = [
@@ -121,6 +122,13 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# MEDIA
+# MEDIA_ROOT = BASE_DIR / "media"
+# MEDIA_URL = "/media/"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
