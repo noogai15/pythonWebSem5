@@ -1,0 +1,13 @@
+@import "./styles.css";
+
+.comment{
+    display: flex;
+    flex-direction: column;
+}
+.comment_vote_wrapper{
+    display: flex;
+}
+.voting{
+    margin: 0px 24px 0px;
+}
+

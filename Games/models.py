@@ -91,10 +91,11 @@ class Game(models.Model):
 
 
 class Comment(models.Model):
-    text = models.TextField(max_length=500)
+    text = models.TextField(max_length=500, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    upvotes = models.ManyToManyField(User, related_name="upvote")
 
     class Meta:
         ordering = ['timestamp']
@@ -126,6 +127,7 @@ class Vote(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.up_or_down + ' on ' + self.book.title + ' by ' + self.user.username
