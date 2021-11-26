@@ -3,6 +3,11 @@
 *.pot
 *.pyc
 __pycache__
+*/*/*/__pycache__
+UBG_6/__pycache__
+*/*/__pycache__
+
+*/__pycache__/
 db.sqlite3
 media
 
@@ -119,3 +124,6 @@ GitHub.sublime-settings
 .history
 
 
+Games/migrations/__pycache__/0001_initial.cpython-39.pyc
+UBG_6/__pycache__/urls.cpython-39.pyc
+Games/migrations/__pycache__/0001_initial.cpython-39.pyc
