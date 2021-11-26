@@ -3,8 +3,23 @@
 
 <head>
     <meta charset="utf-8">
-    {% block css %}{% endblock %}
+    {% block css %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    {% endblock %}
+
     <title>{% block title %}Base Titel{% endblock %}</title>
+
+    <div class="nav-bar-wrapper">
+        <ul class="nav-bar">
+            <li><a href={% url 'home' %}>Home</a></li>
+            <li><a href={% url 'game-list' %}>Your Games</a></li>
+            {% if user.is_authenticated %}
+            <li><a href={% url 'game-create' %}>Game Create (Admin)</a></li>
+            {% comment %} TODO: Make Admin only {% endcomment %}
+            {% endif %}
+        </ul>
+    </div>
 </head>
 
 <body>

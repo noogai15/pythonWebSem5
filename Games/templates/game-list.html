@@ -1,15 +1,11 @@
 {% extends "home.html" %}
 
-{% block css %}
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
+{% block title %}
+Games
 {% endblock %}
 
-
-{% block title %}Games list{% endblock %}
-
 {% block content %}
-{% include "navbar.html" %}
+
 <h2>Games list</h2>
 <ul>
     {% for game in all_games %}

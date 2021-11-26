@@ -27,12 +27,18 @@ label {
 
 .nav-bar-wrapper {
   display: flex;
+  justify-self: start;
   align-self: start;
+  list-style-type: none;
+  margin: 0px 40px 0px;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
 }
 
 .nav-bar {
   display: flex;
-  justify-self: start;
+  justify-self: stretch;
   list-style-type: none;
   margin: 0px 40px 0px;
   padding: 0;
@@ -41,4 +47,8 @@ label {
 }
 .nav-bar > * {
   margin: 24px;
+}
+
+.top-bar-wrapper {
+  display: flex;
 }

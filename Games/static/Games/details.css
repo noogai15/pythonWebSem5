@@ -11,3 +11,7 @@
     margin: 0px 24px 0px;
 }
 
+
+.top-bar-wrapper {
+  display: flex;
+}

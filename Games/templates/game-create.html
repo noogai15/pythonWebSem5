@@ -1,10 +1,9 @@
-{% block title %}Add game{% endblock %}
-{% block css %}
-{% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
+{% block title %}
+<div class="top-bar-wrapper">
+    Create Game
+    {% include "navbar.html" %}
+</div>
 {% endblock %}
-
-{% include "navbar.html" %}
 
 {% block logged_in_content %}
 {#    {% if  game.user.is_authenticated %}#}

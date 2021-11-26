@@ -1,9 +1,11 @@
-{% block title %}Game detail{% endblock %}
+{% extends "home.html" %}
+
+{% block title %}
+Games
+{% endblock %}
 
 {% block content %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'Games/details.css' %}">
-{% include "navbar.html" %}
 
 <h2>Game detail</h2>
 
