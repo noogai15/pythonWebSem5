@@ -57,32 +57,6 @@ class Game(models.Model):
         else:
             return self.desc[0:25] + "..."
 
-    def get_upvotes(self):
-        upvotes = Vote.objects.filter(up_or_down='U',
-                                      game=self)
-        return upvotes
-
-    def get_upvotes_count(self):
-        return len(self.get_upvotes())
-
-    def get_downvotes(self):
-        downvotes = Vote.objects.filter(up_or_down='D',
-                                        game=self)
-        return downvotes
-
-    def get_downvotes_count(self):
-        return len(self.get_downvotes())
-
-    def vote(self, user, up_or_down):
-        U_or_D = 'U'
-        if up_or_down == 'down':
-            U_or_D = 'D'
-        vote = Vote.objects.create(up_or_down=U_or_D,
-                                   user=user,
-                                   game=self
-                                   )
-
-
     def __str__(self):
         return self.name
 
@@ -95,42 +69,71 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    upvotes = models.ManyToManyField(User, related_name="upvote")
 
     class Meta:
-        ordering = ['timestamp']
-        verbose_name = 'Comment'
-        verbose_name_plural = 'Comments'
+        ordering = ["timestamp"]
+        verbose_name = "Comment"
+        verbose_name_plural = "Comments"
 
     def get_comment_prefix(self):
         if len(self.text) > 50:
-            return self.text[:50] + '...'
+            return self.text[:50] + "..."
         else:
             return self.text
 
+    def get_upvotes(self):
+        upvotes = Vote.objects.filter(up_or_down="U", comment=self)
+        return upvotes
+
+    def get_upvotes_count(self):
+        return len(self.get_upvotes())
+
+    def get_downvotes(self):
+        downvotes = Vote.objects.filter(up_or_down="D", comment=self)
+        return downvotes
+
+    def get_downvotes_count(self):
+        return len(self.get_downvotes())
+
+    def vote(self, user, game, U_or_D):
+        vote = Vote.objects.create(
+            up_or_down=U_or_D, user=user, game=game, comment=self
+        )
+
+    def reverse_vote(self, user, game, up_or_down):
+        Vote.objects.filter(up_or_down=up_or_down, comment=self, user=user).delete()
+
     def __str__(self):
-        return self.get_comment_prefix() + ' (' + self.user.username + ')'
+        return self.get_comment_prefix() + " (" + self.user.username + ")"
 
     def __repr__(self):
-        return self.get_comment_prefix() + ' (' + self.user.username + ' / ' + str(self.timestamp) + ')'
+        return (
+            self.get_comment_prefix()
+            + " ("
+            + self.user.username
+            + " / "
+            + str(self.timestamp)
+            + ")"
+        )
 
 
 class Vote(models.Model):
     VOTE_TYPES = [
-        ('U', 'up'),
-        ('D', 'down'),
+        ("U", "up"),
+        ("D", "down"),
     ]
 
-    up_or_down = models.CharField(max_length=1,
-                                  choices=VOTE_TYPES,
-                                 )
+    up_or_down = models.CharField(
+        max_length=1,
+        choices=VOTE_TYPES,
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.up_or_down + ' on ' + self.book.title + ' by ' + self.user.username
+        return self.up_or_down + " on " + self.book.title + " by " + self.user.username
 
     def getUserFromVote(self):
         return self.user

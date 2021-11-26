@@ -3,6 +3,7 @@
 {% block content %}
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'Games/details.css' %}">
+{% include "navbar.html" %}
 
 <h2>Game detail</h2>
 
@@ -35,57 +36,57 @@
         <td><b>Price:</b></td>
         <td>{{ this_game.price }}<br></td>
     </tr>
-   <tr>
+    <tr>
         <td><b>Image:</b></td>
         <td>
-        {% if this_game.image %}
-        <img src="{{ this_game.image.url }}" height="150" width="150">
-        {% endif %}
+            {% if this_game.image %}
+            <img src="{{ this_game.image.url }}" height="150" width="150">
+            {% endif %}
         </td>
     </tr>
 </table>
 
-<div class = "comment">
+<div class="comment">
     {% for comment in all_comments %}
-        <b style="color: darkgreen">{{ comment.user.username }} on {{ comment.timestamp }}</b><br>
+    <b style="color: darkgreen">{{ comment.user.username }} on {{ comment.timestamp }}</b><br>
 
- <div class = "comment_vote_wrapper">
-     {{ comment.text }}
-     <br><br>
-    <div class ="voting">
-        {% if comment.voted_already %}
-
-        <span style="color: grey">{{ upvotes }}</span>
-        {% endif %}
-        <span style="color: darkgreen">{{ upvotes }}</span>
-        <a href="{% url 'game-vote' this_game.id comment.id 'up' %}" style="text-decoration: none">
-        <img src="{% static 'Games/arrow_up.png' %}" height="20" width="20">
-        </a>
-    &nbsp;&nbsp;&nbsp;
-        <span style="color: crimson">{{ downvotes }}</span>
-        <a href="{% url 'game-vote' this_game.id comment.id 'down' %}" style="text-decoration: none">
-            <p>{{ comment.id }}</p>
-        <img src="{% static 'Games/arrow_down.png' %}" height="20" width="20">
-        </a>
-    </div>
+    <div class="comment_vote_wrapper">
+        {{ comment.text }}
+        <br><br>
+        <div class="voting">
+            {% if comment.voted_already %}
+            <span style="color: grey">{{ comment.get_upvotes_count }}</span>
+            {%else%}
+            <span style="color: darkgreen">{{  comment.get_upvotes_count  }}</span>
+            <a href="{% url 'game-vote' this_game.id comment.id 'up' %}" style="text-decoration: none">
+                <img src="{% static 'Games/arrow_up.png' %}" height="20" width="20">
+            </a>
+            &nbsp;&nbsp;&nbsp;
+            <span style="color: crimson">{{comment.get_downvotes_count}}</span>
+            <a href="{% url 'game-vote' this_game.id comment.id 'down' %}" style="text-decoration: none">
+                <img src="{% static 'Games/arrow_down.png' %}" height="20" width="20">
+                {% endif %}
+            </a>
+        </div>
     </div>
     <br><br>
     {% endfor %}
     <br>
 </div>
 
-    {% if not commented_already %}
-        <b style="color: crimson">Do you have a comment for this game?</b><br>
-        <form method="POST">
-            {% csrf_token %}
-            {{ comment_form.as_p }}
-            <button type="submit" onclick="window.location.reload()">Add comment</button> {# onclick="location = self.location.href;" #}
+{% if not commented_already %}
+<b style="color: crimson">Do you have a comment for this game?</b><br>
+<form method="POST">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit" onclick="window.location.reload()">Add comment</button>
+    {# onclick="location = self.location.href;" #}
 
-        </form>
-    {% endif %}
+</form>
+{% endif %}
 
 
-    <a class="btn btn-primary" href={% url "game-delete" this_game.id %}>Delete</a>
+<a class="btn btn-primary" href={% url "game-delete" this_game.id %}>Delete</a>
 
 <br>
 <a href="{% url 'game-list' %}">Back to all games</a>

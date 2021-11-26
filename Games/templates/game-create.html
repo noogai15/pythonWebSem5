@@ -4,6 +4,8 @@
 <link rel="stylesheet" type="text/css" href="{% static 'Games/styles.css' %}">
 {% endblock %}
 
+{% include "navbar.html" %}
+
 {% block logged_in_content %}
 {#    {% if  game.user.is_authenticated %}#}
 <h2>Add game</h2>

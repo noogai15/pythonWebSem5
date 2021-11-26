@@ -26,9 +26,19 @@ label {
 }
 
 .nav-bar-wrapper {
+  display: flex;
+  align-self: start;
+}
+
+.nav-bar {
+  display: flex;
+  justify-self: start;
   list-style-type: none;
-  margin: 0;
+  margin: 0px 40px 0px;
   padding: 0;
   overflow: hidden;
   background-color: #333;
+}
+.nav-bar > * {
+  margin: 24px;
 }

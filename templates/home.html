@@ -3,9 +3,11 @@
 {% block title %}Homepage Titel{% endblock %}
 {% block css %}
 {% load static %}
-<link rel="stylesheet" type="text/css" href="{% static 'Game/styles.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
 {% endblock %}
 {% block content %}
+{% include "navbar.html" %}
+
 <H1>Homepage</H1>
 
 {% if user.is_authenticated %}
