@@ -52,3 +52,14 @@ label {
 .top-bar-wrapper {
   display: flex;
 }
+
+.comment {
+  display: flex;
+  flex-direction: column;
+}
+.comment > * {
+  margin: 8px 0px 8px;
+}
+.comment_vote_wrapper > * {
+  margin: 8px 0px 8px;
+}

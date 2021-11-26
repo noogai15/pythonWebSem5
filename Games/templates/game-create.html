@@ -1,11 +1,12 @@
+{% extends "home.html" %}
+
 {% block title %}
 <div class="top-bar-wrapper">
     Create Game
-    {% include "navbar.html" %}
 </div>
 {% endblock %}
 
-{% block logged_in_content %}
+{% block content %}
 {#    {% if  game.user.is_authenticated %}#}
 <h2>Add game</h2>
 <form method="POST" enctype="multipart/form-data">

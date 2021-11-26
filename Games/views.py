@@ -27,6 +27,8 @@ def game_detail(request, **kwargs):
     # has the user commented on that game already ?
     # Comments where game=specific game and user is the one requesting
     commented_already = Comment.objects.filter(game=game, user=user).exists()
+    star = 0
+    all_stars = [1, 2, 3, 4, 5]
 
     # Add comment
     if request.method == "POST":
@@ -57,6 +59,8 @@ def game_detail(request, **kwargs):
         "commented_already": commented_already,
         "all_comments": comments,
         "comment_form": CommentForm,
+        "star": star,
+        "all_stars": all_stars,
     }
     return render(request, "game-detail.html", context)
 

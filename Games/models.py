@@ -17,6 +17,7 @@ class Game(models.Model):
     ]
     AGE_RATINGS = [(0, "0+"), (6, "6+"), (12, "12+"), (16, "16+"), (18, "18+")]
 
+    age_rating = models.IntegerField(choices=AGE_RATINGS)
     name = models.CharField(max_length=100)
     desc = models.TextField(max_length=200)
     genre = models.CharField(max_length=10, choices=GENRES)
@@ -69,6 +70,9 @@ class Comment(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+
+    STAR_RATINGS = [(1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")]
+    star_rating = models.IntegerField(choices=STAR_RATINGS, default=0)
 
     class Meta:
         ordering = ["timestamp"]
