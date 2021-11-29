@@ -1,0 +1,30 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+{% endblock %}
+
+{% block title %}Search game{% endblock %}
+
+{% block content %}
+<h2>Search Game</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+    <br>
+    <br>
+
+    {% if show_results %}
+        <b>Games Found:</b><br>
+        <ul>
+        {% for game in games_found %}
+            <a href="{% url 'game-detail' game.id %}"><b>{{ game.name }}</b></a><br>
+            {{ game.genre }} / {{ game.price }} / {{ game.age_rating }}<br>
+            <br>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

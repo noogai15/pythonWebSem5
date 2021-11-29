@@ -1,0 +1,10 @@
+{% block title %} EDIT COMMENT {% endblock %}
+
+
+<form method="POST" action="{% url 'comment-edit' comment.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" onclick="window.location.reload()">UPDATE</button>
+        {# onclick="location = self.location.href;" #}
+
+</form>

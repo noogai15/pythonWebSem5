@@ -2,14 +2,16 @@ import io
 
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseRedirect
+from django.forms import model_to_dict
+from django.http import HttpResponseRedirect, FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django.views.generic import UpdateView
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
-from .forms import CommentForm, GameForms
+from .forms import CommentForm, GameForms, SearchForm, CommentEditForm
 from .models import Comment, Game, Vote
 
 
@@ -191,3 +193,41 @@ def game_delete(request, **kwargs):
         return redirect("game-list")
     context = {"this_game": this_game}
     return render(request, "game-delete.html", context)
+
+
+def game_search(request):
+    if request.method == 'POST':
+        search_string_creator = request.POST['creator']
+        games_found = Game.objects.filter(creator__contains=search_string_creator)
+
+        search_string_name = request.POST['name']
+        if search_string_name:
+            games_found = games_found.filter(name__contains=search_string_name)
+
+        form_in_function_based_view = SearchForm()
+        context = {'form': form_in_function_based_view,
+                   'games_found': games_found,
+                   'show_results': True}
+        return render(request, 'game-search.html', context)
+
+    else:
+        form_in_function_based_view = SearchForm()
+        context = {'form': form_in_function_based_view,
+                   'show_results': False}
+        return render(request, 'game-search.html', context)
+
+
+def edit_comment(request, pk, comment_id):
+    comment_edit_form = CommentEditForm(request.POST if request.POST else None, instance= Comment.objects.get( ))
+
+
+class UpdateCommentView(UpdateView):
+    model = Comment
+    template_name = 'comment-edit.html'
+    form_class = CommentEditForm
+    success_url = reverse_lazy("game-list")
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
