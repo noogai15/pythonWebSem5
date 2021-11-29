@@ -5,6 +5,7 @@ from django.urls import path
 from django.conf.urls import url
 
 from . import views
+from .views import UpdateCommentView
 
 urlpatterns = [
     path("show/", views.game_list, name="game-list"),
@@ -14,5 +15,7 @@ urlpatterns = [
     path("add/", views.game_create, name="game-create"),
     path("delete/<int:pk>", views.game_delete, name="game-delete"),
     # url(r'^(?P<pk>\d+)/delete/', views.game_delete, name='game-delete'),
+    path('search/', views.game_search, name='game-search'),
     path("show/<int:pk>/pdf", views.game_detail_pdf, name="game-detail-pdf"),
+    path("comments/edit/<int:pk>/", UpdateCommentView.as_view(), name="comment-edit"), # views.edit_comment
 ]

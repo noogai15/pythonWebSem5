@@ -52,6 +52,11 @@ Games
     {% for comment in all_comments %}
     <b style="color: darkgreen">{{ comment.user.username }} on {{ comment.timestamp }}</b>
 
+        {% if comment.user == request.user %}
+            <button><a href="{% url 'comment-edit' comment.id %}"> EDIT MY COMMENT </a></button>
+        {% endif %}
+
+
     <div class="stars">
         {% for star in all_stars %}
         {% if star <= comment.star_rating %}

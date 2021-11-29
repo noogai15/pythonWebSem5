@@ -30,3 +30,21 @@ class CommentForm(forms.ModelForm):
             "user": forms.HiddenInput(),
             "game": forms.HiddenInput(),
         }
+
+
+class CommentEditForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["text", "star_rating"]
+        widgets = {
+            "user": forms.HiddenInput(),
+            "game": forms.HiddenInput(),
+        }
+
+class SearchForm(forms.ModelForm):
+
+    name = forms.CharField(required=False)
+
+    class Meta:
+        model = Game
+        fields = ['creator', 'name']
