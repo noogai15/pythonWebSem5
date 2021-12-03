@@ -1,0 +1,30 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Books/books_style.css' %}">
+{% endblock %}
+
+{% block title %}Search book{% endblock %}
+
+{% block logged_in_content %}
+<h2>Search book</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Search</button>
+    </form>
+    <br>
+    <br>
+
+    {% if show_results %}
+        <b>Books found:</b><br>
+        <ul>
+        {% for book in books_found %}
+            <a href="{% url 'book-detail' book.id %}"><b>{{ book.get_full_title }}</b></a><br>
+            {{ book.author }} / {{ book.get_type_display }} / {{ book.pages }} pages<br>
+            <br>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

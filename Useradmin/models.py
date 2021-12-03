@@ -12,11 +12,11 @@ def get_date_20_years_ago():
 
 
 def get_myuser_from_user(user):
-    '''
+    """
     :param user: Instance from User class
     :return: Corresponding MyUser instance, or None if the
     instance does not exist
-    '''
+    """
     myuser = None
     myuser_query_set = MyUser.objects.filter(user=user)
     if len(myuser_query_set) > 0:
@@ -25,17 +25,46 @@ def get_myuser_from_user(user):
 
 
 class MyUser(models.Model):
+
+    USER_TYPES = [
+        ("SU", "superuser"),
+        ("CS", "customer service"),
+        ("CU", "customer"),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    date_of_birth = models.DateField(default=get_date_20_years_ago())  # Default is 20 years old
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    date_of_birth = models.DateField(
+        default=get_date_20_years_ago()
+    )  # Default is 20 years old
+    profile_picture = models.ImageField(
+        upload_to="profile_pictures/", blank=True, null=True
+    )
     is_a_cat = models.BooleanField(default=False)
 
+    type = models.CharField(
+        max_length=2,
+        choices=USER_TYPES,
+        default="CU",
+    )
+
+    def is_superuser_or_customer_service(self):
+        if self.type == "SU" or self.type == "CS":
+            return True
+        else:
+            return False
+
+    def is_superuser_or_staff(self):
+        return self.is_superuser or self.is_staff
+
     def execute_after_login(self):
-        if 'Cat' in self.user.first_name or 'cat' in self.user.first_name \
-                or 'Cat' in self.user.last_name or 'cat' in self.user.last_name:
+        if (
+            "Cat" in self.user.first_name
+            or "cat" in self.user.first_name
+            or "Cat" in self.user.last_name
+            or "cat" in self.user.last_name
+        ):
             self.is_a_cat = True
         self.save()
-
 
     def has_birthday_today(self):
         return_boolean = False
@@ -52,4 +81,11 @@ class MyUser(models.Model):
         return return_boolean
 
     def __str__(self):
-        return self.user.first_name + ' ' + self.user.last_name + ' (' + str(self.date_of_birth) + ')'
+        return (
+            self.user.first_name
+            + " "
+            + self.user.last_name
+            + " ("
+            + str(self.date_of_birth)
+            + ")"
+        )

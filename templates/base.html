@@ -18,6 +18,9 @@
             <li><a href={% url 'game-create' %}>Game Create (Admin)</a></li>
             {% comment %} TODO: Make Admin only {% endcomment %}
             {% endif %}
+            {% if user.is_authenticated %}
+            <li><a href={% url 'all_reports' %}>Reports</a></li>
+            {% endif %}
         </ul>
     </div>
 </head>

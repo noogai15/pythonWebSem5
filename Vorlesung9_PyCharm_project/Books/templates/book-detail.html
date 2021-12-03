@@ -1,0 +1,69 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Books/books_style.css' %}">
+{% endblock %}
+
+{% block title %}Book detail{% endblock %}
+
+{% block content %}
+<h2>Book detail</h2>
+
+    <table>
+    <tr>
+        <td><b>Title:</b></td>
+        <td>{{ that_one_book.title }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Subtitle:</b></td>
+        <td>{{ that_one_book.subtitle }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Author:</b></td>
+        <td>{{ that_one_book.author }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Type:</b></td>
+        <td>{{ that_one_book.get_type_display }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Number of pages:</b></td>
+        <td>{{ that_one_book.pages }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Date published:</b></td>
+        <td>{{ that_one_book.date_published }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Entered by:</b></td>
+        <td>{{ that_one_book.myuser.username }}<br></td>
+    </tr>
+    </table>
+    <span style="color: darkgreen">{{ upvotes }}</span>
+    <a href="{% url 'book-vote' that_one_book.id 'up' %}" style="text-decoration: none">
+        <img src="{% static 'Books/arrow_up.png' %}" height="20" width="20">
+    </a>
+    &nbsp;&nbsp;&nbsp;
+    <span style="color: crimson">{{ downvotes }}</span>
+    <a href="{% url 'book-vote' that_one_book.id 'down' %}" style="text-decoration: none">
+        <img src="{% static 'Books/arrow_down.png' %}" height="20" width="20">
+    </a>
+    <br><br>
+
+    {% for comment in comments_for_that_one_book %}
+        <b style="color: darkgreen">{{ comment.myuser.username }} on {{ comment.timestamp }}</b><br>
+        {{ comment.text }}<br><br>
+    {% endfor %}
+    <br>
+
+    <b style="color: crimson">Do you have a comment for this book?</b><br>
+    <form method="POST">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit">Add comment</button>
+    </form>
+
+    <br>
+    <a href="{% url 'book-list' %}">Back to all books</a>
+{% endblock %}

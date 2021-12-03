@@ -1,0 +1,36 @@
+{% extends "home.html" %}
+{% load static %}
+
+{# 
+    {% comment %} 
+    {% extends "./../static/styles.css"> 
+    {% endcomment %}
+#}
+
+{% block title %}
+<div class="top-bar-wrapper">
+    Create Game
+</div>
+{% endblock %}
+
+{% block content %}
+
+<h2>All Reports</h2>
+
+{% if reports %}
+<div class="all-reports-wrapper">
+    {% for report in reports %}
+    <form action="{% url 'comment-delete-confirm' report.comment.id %}" method="POST">
+        {% csrf_token %}
+        <div class="report-wrapper">
+            <p id="report-author">Written by {{ report.author }}</p>
+            <p id='report-content'>{{ report.message }}</p>
+            <p id='report-reporter'>Reported by: {{ report.reporter }}</p>
+        </div>
+        <input type='submit' value='delete'>
+    </form>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock content %}

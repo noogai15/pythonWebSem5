@@ -1,0 +1,25 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Books/books_style.css' %}">
+{% endblock %}
+
+{% block title %}Books list{% endblock %}
+
+{% block content %}
+<h2>Books list</h2>
+<ul>
+    {% for book in all_the_books %}
+        <a href="{{ book.id }}/"><b>{{ book.get_full_title }}</b></a><br>
+        <!-- Alternative link:
+        <a href="{% url 'book-detail' book.id %}">
+        -->
+        {{ book.author }} / {{ book.get_type_display }} / {{ book.pages }} pages<br>
+        <br>
+    {% endfor %}
+</ul>
+
+<a href={% url 'book-create' %}>Add a new book</a><br>
+<a href={% url 'book-search' %}>Search the books</a>
+{% endblock %}

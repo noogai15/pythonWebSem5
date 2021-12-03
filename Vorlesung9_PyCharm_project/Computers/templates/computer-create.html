@@ -1,0 +1,38 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Computers/computers_style.css' %}">
+{% endblock %}
+
+{% block title %}Add computer{% endblock %}
+
+{% block logged_in_content %}
+<h2>Add computer</h2>
+    <form method="POST">
+        {% csrf_token %}
+
+        <label for="id_brand">Brand:</label>
+        <select id="id_brand" type="text" name="brand">
+            <option value="A">Apple</option>
+            <option value="H">HP</option>
+            <option value="M">Microsoft</option>
+            <option value="S">Sony</option>
+        </select>
+        <br><br>
+
+        {{ form.type.label }}: {{ form.type }}<br><br>
+
+        {{ form.operating_system.label }}: {{ form.operating_system }}<br><br>
+
+        <label for="{{ form.memory.id_for_label }}">{{ form.memory.label }}:</label>
+        <input id="{{ form.memory.id_for_label }}" type="{{ form.memory.field.widget.input_type }}" name="{{ form.memory.html_name }}"> Gb<br><br>
+
+        {{ form.serial_number.label }}:
+        {{ form.serial_number }}<br><br>
+
+        <!-- {{ form.as_p }} -->
+
+        <button type="submit">Add computer</button>
+    </form>
+{% endblock %}

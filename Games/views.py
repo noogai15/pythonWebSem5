@@ -3,16 +3,16 @@ import io
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.forms import model_to_dict
-from django.http import HttpResponseRedirect, FileResponse, Http404
+from django.http import FileResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import UpdateView, DeleteView
+from django.views.generic import DeleteView, UpdateView
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
-from .forms import CommentForm, GameForms, SearchForm, CommentEditForm
-from .models import Comment, Game, Vote, Report
+from .forms import CommentEditForm, CommentForm, GameForms, SearchForm
+from .models import Comment, Game, Report, Vote
 
 
 def game_list(request):
@@ -33,7 +33,7 @@ def game_detail(request, **kwargs):
     all_stars = [1, 2, 3, 4, 5]
 
     # Add comment
-    
+
     if request.method == "POST":
         form = CommentForm(request.POST)
         form.instance.user = request.user
@@ -60,7 +60,7 @@ def game_detail(request, **kwargs):
     comments_length = Comment.objects.filter(game=game).count()
     if comments.count() == comments_length and comments.count() != 0:
         i = 0
-        c = 0 
+        c = 0
         for comment in comments:
             i += comment.star_rating
             c += 1
@@ -89,19 +89,18 @@ def game_detail(request, **kwargs):
 
 def get_average_star_rating(self):
 
-        all_comments = Comment.objects.filter(game=self)
-        result = 0
-        current_length_of_comments = Comment.objects.filter(game=self).count()   
-        # CHECK IF A COMMENT HAS BEEN ADDED THEN DO THE SAME AGAIN TO UPDATE ATTRIBUTE AVERAGE_STARS
+    all_comments = Comment.objects.filter(game=self)
+    result = 0
+    current_length_of_comments = Comment.objects.filter(game=self).count()
+    # CHECK IF A COMMENT HAS BEEN ADDED THEN DO THE SAME AGAIN TO UPDATE ATTRIBUTE AVERAGE_STARS
 
-        # CHECK IF THEY ARE THE SAME LENGTH
-       
-            #else:
-                # result = 0
-                # self.average_stars = 0
-        
-        return result
+    # CHECK IF THEY ARE THE SAME LENGTH
 
+    # else:
+    # result = 0
+    # self.average_stars = 0
+
+    return result
 
 
 # def vote(request, pk: str, fk: str, up_or_down: str):
@@ -183,7 +182,7 @@ def game_detail_pdf(request, pk: str):
         "Age Rating: " + str(game.age_rating),
         "Created At: " + str(game.created_at),
         "Price: " + game.price,
-        "Rating: " + str(game.average_stars)
+        "Rating: " + str(game.average_stars),
     ]
     # "Image " + game.image + "\n"]
     # txt = ["Game: " + game.name + "Description: " + game.desc + "Creator: " + game.creator];
@@ -234,44 +233,44 @@ def game_delete(request, **kwargs):
 
 
 def game_search(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         # SEARCH WITH : DESCRIPTION
-        search_string_name = request.POST['name']
+        search_string_name = request.POST["name"]
         games_found = Game.objects.filter(name__contains=search_string_name)
-       
+
         # SEARCH WITH : NAME
-        search_string_desc = request.POST['desc']
+        search_string_desc = request.POST["desc"]
         if search_string_desc:
             games_found = games_found.filter(desc__contains=search_string_desc)
 
         # SEARCH WITH : STAR - RATING
-        search_average_stars = request.POST['average_stars']
+        search_average_stars = request.POST["average_stars"]
         if search_average_stars:
             games_found = games_found.filter(average_stars__exact=search_average_stars)
-        
 
         form_in_function_based_view = SearchForm()
-        context = {'form': form_in_function_based_view,
-                   'games_found': games_found,
-                   'show_results': True}
-        return render(request, 'game-search.html', context)
+        context = {
+            "form": form_in_function_based_view,
+            "games_found": games_found,
+            "show_results": True,
+        }
+        return render(request, "game-search.html", context)
 
     else:
         form_in_function_based_view = SearchForm()
-        context = {'form': form_in_function_based_view,
-                   'show_results': False}
-        return render(request, 'game-search.html', context)
+        context = {"form": form_in_function_based_view, "show_results": False}
+        return render(request, "game-search.html", context)
 
 
 def edit_comment(request, pk, comment_id):
-    comment_edit_form = CommentEditForm(request.POST if request.POST else None, instance= Comment.objects.get( ))
-
-
+    comment_edit_form = CommentEditForm(
+        request.POST if request.POST else None, instance=Comment.objects.get()
+    )
 
 
 class UpdateCommentView(UpdateView):
     model = Comment
-    template_name = 'comment-edit.html'
+    template_name = "comment-edit.html"
     form_class = CommentEditForm
     success_url = reverse_lazy("game-list")
 
@@ -282,7 +281,7 @@ class UpdateCommentView(UpdateView):
 
 class DeleteCommentView(DeleteView):
     model = Comment
-    template_name = 'comment-delete.html'
+    template_name = "comment-delete.html"
     form_class = CommentEditForm
     success_url = reverse_lazy("game-list")
 
@@ -291,8 +290,7 @@ class DeleteCommentView(DeleteView):
         return super().form_valid(form)
 
 
-
-def comment_report(request, pk:int, game_id:str):
+def comment_report(request, pk: int, game_id: str):
     user = request.user
     game = Game.objects.get(id=game_id)
     comment = Comment.objects.get(id=int(pk))
@@ -301,7 +299,4 @@ def comment_report(request, pk:int, game_id:str):
     reported_already = Report.objects.filter(reporter=user, comment=comment).exists()
     # commented_already = Comment.objects.filter(game=game, user=user).exists()
 
-    
     return redirect("game-detail", game.id)
-
-

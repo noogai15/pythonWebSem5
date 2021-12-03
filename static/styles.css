@@ -1,3 +1,5 @@
+@import url("resets.css");
+
 body {
   display: flex;
   flex-direction: column;
@@ -62,4 +64,25 @@ label {
 }
 .comment_vote_wrapper > * {
   margin: 8px 0px 8px;
+}
+
+.all-reports-wrapper {
+  display: flex;
+  flex-flow: column;
+}
+
+.report-wrapper {
+  display: flex;
+  border-radius: 3px;
+  padding: 24px;
+  margin: 24px;
+  flex-direction: column;
+  background-color: rgb(85, 85, 85);
+}
+
+.report-wrapper > p {
+  margin: 8px;
+}
+#report-reporter {
+  color: rgba(19, 146, 19, 0.753);
 }

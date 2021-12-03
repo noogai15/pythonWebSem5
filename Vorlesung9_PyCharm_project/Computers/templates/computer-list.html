@@ -1,0 +1,24 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Computers/computers_style.css' %}">
+{% endblock %}
+
+{% block title %}Computers list{% endblock %}
+
+{% block content %}
+<h2>Computers list</h2>
+<ul>
+    {% for computer in all_the_computers %}
+        <a href="{{ computer.id }}/"><b>{{ computer.get_brand_display }}</b> {{ computer.serial_number }}</a><br>
+        <!-- Alternative link:
+        <a href="{% url 'computer-detail' computer.id %}">
+        -->
+        {{ computer.get_type_display }} / {{ computer.get_operating_system_display }} / {{ computer.memory }} Gb<br>
+        <br>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'computer-create' %}">Add a new computer</a><br>
+{% endblock %}
