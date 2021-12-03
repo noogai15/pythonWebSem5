@@ -1,4 +1,5 @@
 import datetime
+import math
 
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
@@ -16,14 +17,14 @@ class Game(models.Model):
         ("RPG", "Role-Playing Game"),
     ]
     AGE_RATINGS = [(0, "0+"), (6, "6+"), (12, "12+"), (16, "16+"), (18, "18+")]
-
     age_rating = models.IntegerField(choices=AGE_RATINGS)
+
     name = models.CharField(max_length=100)
     desc = models.TextField(max_length=200)
     genre = models.CharField(max_length=10, choices=GENRES)
     price = models.CharField(max_length=30, default="0€")
+    average_stars = models.IntegerField(default=0)
 
-    age_rating = models.IntegerField(choices=AGE_RATINGS)
     creator = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=datetime.datetime.now)
 
@@ -52,6 +53,10 @@ class Game(models.Model):
     def get_age_rating(self):
         return self.age_rating.display()
 
+    def get_average_star_rating(self):
+        return self.average_stars
+        
+
     def get_desc_preview(self):
         if len(self.desc) < 25:
             return self.desc
@@ -68,11 +73,14 @@ class Game(models.Model):
 class Comment(models.Model):
     text = models.TextField(max_length=500, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE )
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    
 
     STAR_RATINGS = [(1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")]
     star_rating = models.IntegerField(choices=STAR_RATINGS, default=0)
+
+    reports = models.IntegerField(default=0)
 
     class Meta:
         ordering = ["timestamp"]
@@ -103,6 +111,9 @@ class Comment(models.Model):
         vote = Vote.objects.create(
             up_or_down=U_or_D, user=user, game=game, comment=self
         )
+    
+    def report(self, reporter) :
+        Report.objects.create(reporter=reporter, comment=self, author=self.user, message=self.text)
 
     def reverse_vote(self, user, game, up_or_down):
         Vote.objects.filter(up_or_down=up_or_down, comment=self, user=user).delete()
@@ -120,6 +131,18 @@ class Comment(models.Model):
             + ")"
         )
 
+
+class Report(models.Model):
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reporter")
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commenter")
+    message = models.CharField(max_length=255)
+
+    def __str__(self):
+        return (self.author + ": " + self.message_content + ", reported by " + self.reporter)
+
+    def __repr__(self):
+        return (self.author + " " + self.message_content + " " + self.author)
 
 class Vote(models.Model):
     VOTE_TYPES = [

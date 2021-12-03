@@ -6,13 +6,13 @@ from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, FileResponse, Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, DeleteView
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 
 from .forms import CommentForm, GameForms, SearchForm, CommentEditForm
-from .models import Comment, Game, Vote
+from .models import Comment, Game, Vote, Report
 
 
 def game_list(request):
@@ -33,6 +33,7 @@ def game_detail(request, **kwargs):
     all_stars = [1, 2, 3, 4, 5]
 
     # Add comment
+    
     if request.method == "POST":
         form = CommentForm(request.POST)
         form.instance.user = request.user
@@ -56,6 +57,24 @@ def game_detail(request, **kwargs):
             # raise PermissionDenied('You have already commented on this post')
 
     comments = Comment.objects.filter(game=game)
+    comments_length = Comment.objects.filter(game=game).count()
+    if comments.count() == comments_length and comments.count() != 0:
+        i = 0
+        c = 0 
+        for comment in comments:
+            i += comment.star_rating
+            c += 1
+
+        result = int(round(i / c))
+        average_stars = result
+        game.average_stars = average_stars
+        game.save()
+        print(average_stars)
+    else:
+        average_stars = 0
+        game.average_stars = average_stars
+        game.save()
+
     context = {
         "this_game": game,
         "commented_already": commented_already,
@@ -63,8 +82,26 @@ def game_detail(request, **kwargs):
         "comment_form": CommentForm,
         "star": star,
         "all_stars": all_stars,
+        "average_stars": average_stars,
     }
     return render(request, "game-detail.html", context)
+
+
+def get_average_star_rating(self):
+
+        all_comments = Comment.objects.filter(game=self)
+        result = 0
+        current_length_of_comments = Comment.objects.filter(game=self).count()   
+        # CHECK IF A COMMENT HAS BEEN ADDED THEN DO THE SAME AGAIN TO UPDATE ATTRIBUTE AVERAGE_STARS
+
+        # CHECK IF THEY ARE THE SAME LENGTH
+       
+            #else:
+                # result = 0
+                # self.average_stars = 0
+        
+        return result
+
 
 
 # def vote(request, pk: str, fk: str, up_or_down: str):
@@ -146,6 +183,7 @@ def game_detail_pdf(request, pk: str):
         "Age Rating: " + str(game.age_rating),
         "Created At: " + str(game.created_at),
         "Price: " + game.price,
+        "Rating: " + str(game.average_stars)
     ]
     # "Image " + game.image + "\n"]
     # txt = ["Game: " + game.name + "Description: " + game.desc + "Creator: " + game.creator];
@@ -197,12 +235,20 @@ def game_delete(request, **kwargs):
 
 def game_search(request):
     if request.method == 'POST':
-        search_string_creator = request.POST['creator']
-        games_found = Game.objects.filter(creator__contains=search_string_creator)
-
+        # SEARCH WITH : DESCRIPTION
         search_string_name = request.POST['name']
-        if search_string_name:
-            games_found = games_found.filter(name__contains=search_string_name)
+        games_found = Game.objects.filter(name__contains=search_string_name)
+       
+        # SEARCH WITH : NAME
+        search_string_desc = request.POST['desc']
+        if search_string_desc:
+            games_found = games_found.filter(desc__contains=search_string_desc)
+
+        # SEARCH WITH : STAR - RATING
+        search_average_stars = request.POST['average_stars']
+        if search_average_stars:
+            games_found = games_found.filter(average_stars__exact=search_average_stars)
+        
 
         form_in_function_based_view = SearchForm()
         context = {'form': form_in_function_based_view,
@@ -221,6 +267,8 @@ def edit_comment(request, pk, comment_id):
     comment_edit_form = CommentEditForm(request.POST if request.POST else None, instance= Comment.objects.get( ))
 
 
+
+
 class UpdateCommentView(UpdateView):
     model = Comment
     template_name = 'comment-edit.html'
@@ -230,4 +278,30 @@ class UpdateCommentView(UpdateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+
+class DeleteCommentView(DeleteView):
+    model = Comment
+    template_name = 'comment-delete.html'
+    form_class = CommentEditForm
+    success_url = reverse_lazy("game-list")
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+
+def comment_report(request, pk:int, game_id:str):
+    user = request.user
+    game = Game.objects.get(id=game_id)
+    comment = Comment.objects.get(id=int(pk))
+    comment.report(user)
+    # IF COMMENT HAS BEEN REPORTED ALREADY :
+    reported_already = Report.objects.filter(reporter=user, comment=comment).exists()
+    # commented_already = Comment.objects.filter(game=game, user=user).exists()
+
+    
+    return redirect("game-detail", game.id)
+
 

@@ -43,8 +43,12 @@ class CommentEditForm(forms.ModelForm):
 
 class SearchForm(forms.ModelForm):
 
+    desc = forms.CharField(required=False)
+    average_stars = forms.IntegerField(required=False)
     name = forms.CharField(required=False)
+
 
     class Meta:
         model = Game
-        fields = ['creator', 'name']
+        # GET GAME FROM STAR_RATING
+        fields = ['name', 'desc', 'average_stars']
