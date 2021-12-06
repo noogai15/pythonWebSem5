@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DeleteView, ListView, UpdateView
@@ -76,7 +77,7 @@ def comment_edit_delete(request, pk: str):
         }
         return render(request, "cs-comment-edit-delete.html", context)
 
-
+@permission_required('Games.view_report')  # WORKS : CUSTOMER NOT ALLOWED / BUT SUPERUSER is
 def get_all_reports(request):
     all_reports = Report.objects.all()
     context = {"reports": all_reports}

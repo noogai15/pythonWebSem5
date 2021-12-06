@@ -8,9 +8,17 @@
         {% csrf_token %}
         {{ form.as_p }}
         <p>
-            Username: Deniz
-            PW: berkay2000
+            CS -> Username: deniz --- PW: deniz
+        </p>
+        <p>
+            CU -> Username: customer --- PW: customer
+        </p>
+        <p>
+            SU -> Username: super --- PW: super
         </p>
     <button type="submit">Login</button>
     </form>
+
+    <a href="{% url 'signup' %}">Need an account?</a>
+
 {% endblock %}

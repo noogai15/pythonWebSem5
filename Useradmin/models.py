@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
 from django.db import models
 
 
@@ -24,7 +24,7 @@ def get_myuser_from_user(user):
     return myuser
 
 
-class MyUser(models.Model):
+class MyUser(AbstractUser):
 
     USER_TYPES = [
         ("SU", "superuser"),
@@ -32,7 +32,7 @@ class MyUser(models.Model):
         ("CU", "customer"),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     date_of_birth = models.DateField(
         default=get_date_20_years_ago()
     )  # Default is 20 years old
@@ -58,10 +58,8 @@ class MyUser(models.Model):
 
     def execute_after_login(self):
         if (
-            "Cat" in self.user.first_name
-            or "cat" in self.user.first_name
-            or "Cat" in self.user.last_name
-            or "cat" in self.user.last_name
+            "Cat" in self.first_name
+            #or "cat" in self.user.last_name
         ):
             self.is_a_cat = True
         self.save()
@@ -82,9 +80,9 @@ class MyUser(models.Model):
 
     def __str__(self):
         return (
-            self.user.first_name
+            self.first_name
             + " "
-            + self.user.last_name
+            + self.last_name
             + " ("
             + str(self.date_of_birth)
             + ")"

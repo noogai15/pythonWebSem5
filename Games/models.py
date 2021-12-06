@@ -1,15 +1,18 @@
 import datetime
 import math
-
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db import models
+from django.conf import settings
 
 fs = FileSystemStorage(location="/media/images")
 
 
 # Create your models here.
 class Game(models.Model):
+    custom_permissions = [(
+        ("can_edit_own_comment", "Can edit own comment"),
+    )]
     GENRES = [
         ("HORROR", "Horror"),
         ("FPS", "First Person Shooter"),
@@ -38,8 +41,8 @@ class Game(models.Model):
     # blank=True,
     # )
 
-    user = models.ForeignKey(
-        User,
+    myuser = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="users",
         related_query_name="user",
@@ -73,7 +76,7 @@ class Game(models.Model):
 class Comment(models.Model):
     text = models.TextField(max_length=500, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE )
+    myuser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE )
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     
 
@@ -107,25 +110,25 @@ class Comment(models.Model):
     def get_downvotes_count(self):
         return len(self.get_downvotes())
 
-    def vote(self, user, game, U_or_D):
+    def vote(self, myuser, game, U_or_D):
         vote = Vote.objects.create(
-            up_or_down=U_or_D, user=user, game=game, comment=self
+            up_or_down=U_or_D, myuser=myuser, game=game, comment=self
         )
     
-    def report(self, reporter) :
-        Report.objects.create(reporter=reporter, comment=self, author=self.user, message=self.text)
+    def report(self, reporter):
+        Report.objects.create(reporter=reporter, comment=self, author=self.myuser, message=self.text)
 
-    def reverse_vote(self, user, game, up_or_down):
-        Vote.objects.filter(up_or_down=up_or_down, comment=self, user=user).delete()
+    def reverse_vote(self, myuser, game, up_or_down):
+        Vote.objects.filter(up_or_down=up_or_down, comment=self, myuser=myuser).delete()
 
     def __str__(self):
-        return self.get_comment_prefix() + " (" + self.user.username + ")"
+        return self.get_comment_prefix() + " (" + self.myuser.username + ")"
 
     def __repr__(self):
         return (
             self.get_comment_prefix()
             + " ("
-            + self.user.username
+            + self.myuser.username
             + " / "
             + str(self.timestamp)
             + ")"
@@ -133,9 +136,9 @@ class Comment(models.Model):
 
 
 class Report(models.Model):
-    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reporter")
+    reporter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reporter")
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commenter")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="commenter")
     message = models.CharField(max_length=255)
 
     def __str__(self):
@@ -155,12 +158,27 @@ class Vote(models.Model):
         choices=VOTE_TYPES,
     )
     timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    myuser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.up_or_down + " on " + self.book.title + " by " + self.user.username
+        return self.up_or_down + " on " + self.book.title + " by " + self.myuser.username
 
-    def getUserFromVote(self):
-        return self.user
+
+
+class Order(models.Model):
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date_ordered = models.DateTimeField(auto_now_add=True)
+
+    def get_cart_price(self):
+        return None
+
+
+class OrderItem(models.Model):
+    product = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    quantity = models.IntegerField(default=0, null=True, blank=True)
+
+    def get_total(self):
+        return None

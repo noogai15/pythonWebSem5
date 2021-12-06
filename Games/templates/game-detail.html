@@ -9,7 +9,7 @@ Games
 
 <h2>Game detail</h2>
 
-<p> USERID: {{request.user.id}} </p> 
+<p> USERID: {{request.user.id}} {{request.user.username}} </p>
 
 <table>
     <tr>
@@ -56,7 +56,7 @@ Games
 
 <div class="comment">
     {% for comment in all_comments %}
-    <b style="color: darkgreen">{{ comment.user.username }} on {{ comment.timestamp }}</b>
+    <b style="color: darkgreen">{{ comment.myuser.username }} on {{ comment.timestamp }}</b>
 
     {% if not reported_already %}
         <button><a href="{% url 'comment-report' comment.id this_game.id %}"> REPORT THIS COMMENT </a></button>
@@ -64,12 +64,15 @@ Games
         <p>Thank you for reporting</p>
     {% endif %}
 
-
-        {% if comment.user == request.user %}
+        {# WE SHOULD HAVE A METHOD THAT CHECKS THIS #}
+        {% if comment.myuser == request.user and not request.user.is_superuser %}
             <button><a href="{% url 'comment-edit' comment.id %}"> EDIT MY COMMENT </a></button>
-
             <button><a href="{% url 'comment-delete' comment.id %}"> DELETE MY COMMENT </a></button>
-
+        {% endif %}
+        {# WE SHOULD HAVE A METHOD THAT CHECKS THIS #}
+        {% if request.user.is_superuser or request.user.type == "CS" %}
+            <button><a href="{% url 'comment-edit' comment.id %}"> EDIT THIS COMMENT </a></button>
+            <button><a href="{% url 'comment-delete' comment.id %}"> DELETE THIS COMMENT </a></button>
         {% endif %}
 
 
@@ -118,4 +121,9 @@ Games
 
     <br>
     <a href="{% url 'game-list' %}">Back to all games</a>
+
+    <p> WENN JEMAND DEINEN KOMMENTAR EDITIERT DARF DER JENIGE WIEDER AUF DAS GAME KOMMENTIEREN (also der dessen Kommi editiert wurde)</p>
+
+    <a href="{% url 'game-detail-pdf' this_game.id %}">GET PDF</a>
+
     {% endblock %}

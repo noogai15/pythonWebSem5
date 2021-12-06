@@ -1,6 +1,8 @@
 import io
 
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.forms import model_to_dict
 from django.http import FileResponse, Http404, HttpResponseRedirect
@@ -15,13 +17,13 @@ from django.contrib.auth import get_user_model
 from .forms import CommentEditForm, CommentForm, GameForms, SearchForm
 from .models import Comment, Game, Report, Vote
 
-
+# VON JEDEM ABRUFBAR
 def game_list(request):
     all_games = Game.objects.all
     context = {"all_games": all_games}
     return render(request, "game-list.html", context)
 
-
+# VON JEDEM ABRUFBAR
 def game_detail(request, **kwargs):
     print(kwargs)
     game_id = kwargs["pk"]
@@ -87,49 +89,7 @@ def game_detail(request, **kwargs):
     }
     return render(request, "game-detail.html", context)
 
-
-def get_average_star_rating(self):
-
-    all_comments = Comment.objects.filter(game=self)
-    result = 0
-    current_length_of_comments = Comment.objects.filter(game=self).count()
-    # CHECK IF A COMMENT HAS BEEN ADDED THEN DO THE SAME AGAIN TO UPDATE ATTRIBUTE AVERAGE_STARS
-
-    # CHECK IF THEY ARE THE SAME LENGTH
-
-    # else:
-    # result = 0
-    # self.average_stars = 0
-
-    return result
-
-
-# def vote(request, pk: str, fk: str, up_or_down: str):
-#     game = Game.objects.get(id=int(game_id))
-#     comment = Comment.objects.get(id=int(fk))
-#     user = request.user
-#     all_comments = Comment.objects.filter(game=game)
-#     print(comment)
-#     commented_already = Comment.objects.filter(game=game, user=user).exists()
-#
-#     game.vote(user, up_or_down)
-#     voted_already = Vote.objects.filter(comment=comment, user=user).exists()
-#
-#     if voted_already:
-#         print("VOTE CHECK")
-#
-#     context = {
-#         "this_game": game,
-#         "voted_already": voted_already,
-#         "all_comments": all_comments,
-#         'upvotes': game.get_upvotes_count(),
-#         'downvotes': game.get_downvotes_count(),
-#         "commented_already": commented_already
-#
-#     }
-#     return render(request, "game-detail.html", context)
-
-
+# JEDER DARF JEDEN KOMMENTAR VOTEN
 def vote(request, pk: str, fk: str, up_or_down: str):
     U_or_D = "U"
     print(up_or_down)
@@ -163,7 +123,7 @@ def vote(request, pk: str, fk: str, up_or_down: str):
     }
     return redirect("game-detail", game.id)
 
-
+# JEDER DARF SICH PDFs zum Spiel herunterladen
 def game_detail_pdf(request, pk: str):
     # CREATE BYTESTREAM BUFFER
     buf = io.BytesIO()
@@ -199,9 +159,10 @@ def game_detail_pdf(request, pk: str):
     buf.seek(0)
 
     # RETURN SMTH
-    return FileResponse(buf, as_attachment=True, filename="venue.pdf")
+    return FileResponse(buf, as_attachment=True, filename=game.name + ".pdf")
 
-
+# NUR CS/SU DÜRFEN SPIELE ERSTELLEN
+@permission_required('games.add_game')  # WORKS : CUSTOMER NOT ALLOWED / BUT SUPERUSER & CS are
 def game_create(request):
     if request.method == "POST":
         print("I am in POST")
@@ -218,7 +179,8 @@ def game_create(request):
         context = {"form": create_form}
         return render(request, "game-create.html", context)
 
-
+# NUR CS/SU DÜRFEN SPIELE LÖSCHEN
+@permission_required('games.delete_game')  # WORKS : CUSTOMER NOT ALLOWED / BUT SUPERUSER & CS are
 def game_delete(request, **kwargs):
     game_id = kwargs["pk"]
     this_game = Game.objects.get(id=game_id)
@@ -232,7 +194,10 @@ def game_delete(request, **kwargs):
     context = {"this_game": this_game}
     return render(request, "game-delete.html", context)
 
+# NUR CS/SU DÜRFEN SPIELE UPDATEN zB. bei Preisänderung
+# EDIT GAME (maybe not needed)
 
+# DARF JEDER
 def game_search(request):
     if request.method == "POST":
         # SEARCH WITH : DESCRIPTION
@@ -262,24 +227,27 @@ def game_search(request):
         context = {"form": form_in_function_based_view, "show_results": False}
         return render(request, "game-search.html", context)
 
+# JEDER DARF SEINEN EIGENEN KOMMENTAR EDITIEREN &&& CS/SU DÜRFEN ALLE ÄNDERN
+class UpdateCommentView(UpdateView): # PermissionRequiredMixin,
+    # SO KANN DER USER SEINE EIGENEN KOMMENTARE NICHT EDITIEREN
+    # raise_exception = True
+    # permission_required = 'Games.change_comments'
+    # permission_denied_message = ""
+    # login_url = "/games/"
+    # redirect_field_name = next
 
-def edit_comment(request, pk, comment_id):
-    comment_edit_form = CommentEditForm(
-        request.POST if request.POST else None, instance=Comment.objects.get()
-    )
-
-
-class UpdateCommentView(UpdateView):
     model = Comment
     template_name = "comment-edit.html"
     form_class = CommentEditForm
     success_url = reverse_lazy("game-list")
 
     def form_valid(self, form):
+        # WIE CHECKEN WIR HIER OB DAS SEIN EIGENER KOMMENTAR IST
+        # DEN BUTTON ALLEIN WEGRENDERN REICHT NICHT, DA DER LINK NOCH ABRUFBAR IST
         form.instance.myuser = self.request.user
         return super().form_valid(form)
 
-
+# JEDER DARF SEINEN EIGENEN KOMMENTAR LÖSCHEN &&& CS/SU DARF ALLE LÖSCHEN
 class DeleteCommentView(DeleteView):
     model = Comment
     template_name = "comment-delete.html"
@@ -290,7 +258,7 @@ class DeleteCommentView(DeleteView):
         form.instance.myuser = self.request.user
         return super().form_valid(form)
 
-
+# JEDER DARF JEDEN REPORTEN
 def comment_report(request, pk: int, game_id: str):
     user = request.user
     game = Game.objects.get(id=game_id)
@@ -301,3 +269,8 @@ def comment_report(request, pk: int, game_id: str):
     # commented_already = Comment.objects.filter(game=game, user=user).exists()
 
     return redirect("game-detail", game.id)
+
+
+def game_cart(request): # , pk: int
+    context = {}
+    return render(request, 'game-cart.html', context)
