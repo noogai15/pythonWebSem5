@@ -10,6 +10,7 @@ from django.views.generic import DeleteView, UpdateView
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
+from django.contrib.auth import get_user_model
 
 from .forms import CommentEditForm, CommentForm, GameForms, SearchForm
 from .models import Comment, Game, Report, Vote
@@ -25,10 +26,10 @@ def game_detail(request, **kwargs):
     print(kwargs)
     game_id = kwargs["pk"]
     game = Game.objects.get(id=game_id)
-    user = request.user
+    myuser = request.user
     # has the user commented on that game already ?
     # Comments where game=specific game and user is the one requesting
-    commented_already = Comment.objects.filter(game=game, user=user).exists()
+    commented_already = Comment.objects.filter(game=game, myuser=myuser).exists()
     star = 0
     all_stars = [1, 2, 3, 4, 5]
 
@@ -36,7 +37,7 @@ def game_detail(request, **kwargs):
 
     if request.method == "POST":
         form = CommentForm(request.POST)
-        form.instance.user = request.user
+        form.instance.myuser = request.user
         form.instance.game = game
         # if request.user:
         # raise PermissionDenied('You have already commented on this post') DIRECT THROW - NEED IT AFTER ONE COMMENT
@@ -137,20 +138,20 @@ def vote(request, pk: str, fk: str, up_or_down: str):
 
     game = Game.objects.get(id=int(pk))
     comment = Comment.objects.get(id=int(fk))
-    user = request.user
+    myuser = request.user
     all_comments = Comment.objects.filter(game=game)
-    commented_already = Comment.objects.filter(game=game, user=user).exists()
+    commented_already = Comment.objects.filter(game=game, myuser=myuser).exists()
 
     voted_already = Vote.objects.filter(
-        up_or_down=U_or_D, comment=comment, user=user
+        up_or_down=U_or_D, comment=comment, myuser=myuser
     ).exists()
 
     if voted_already:
         print("ALREADY VOTED ON THIS COMMENT")
-        comment.reverse_vote(user, game, U_or_D)
+        comment.reverse_vote(myuser, game, U_or_D)
     else:
         print("HAD NOT VOTED ON THIS COMMENT YET")
-        comment.vote(user, game, U_or_D)
+        comment.vote(myuser, game, U_or_D)
 
     context = {
         "this_game": game,
@@ -205,7 +206,7 @@ def game_create(request):
     if request.method == "POST":
         print("I am in POST")
         create_form = GameForms(request.POST, request.FILES)
-        create_form.instance.user = request.user
+        create_form.instance.myuser = request.user
         if create_form.is_valid():
             create_form.save()
             print("I saved a new game")
@@ -275,7 +276,7 @@ class UpdateCommentView(UpdateView):
     success_url = reverse_lazy("game-list")
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        form.instance.myuser = self.request.user
         return super().form_valid(form)
 
 
@@ -286,7 +287,7 @@ class DeleteCommentView(DeleteView):
     success_url = reverse_lazy("game-list")
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        form.instance.myuser = self.request.user
         return super().form_valid(form)
 
 
