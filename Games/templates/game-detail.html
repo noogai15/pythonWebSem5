@@ -9,7 +9,7 @@ Games
 
 <h2>Game detail</h2>
 
-<p> USERID: {{request.user.id}} {{request.user.username}} </p>
+<p> USERID: {{request.user.id}} {{request.user.username}} {{request.user.type}}</p>
 
 <table>
     <tr>
@@ -65,7 +65,7 @@ Games
     {% endif %}
 
         {# WE SHOULD HAVE A METHOD THAT CHECKS THIS #}
-        {% if comment.myuser == request.user and not request.user.is_superuser %}
+        {% if comment.myuser == request.user and not request.user.is_superuser or not request.user.type == "CS" %}
             <button><a href="{% url 'comment-edit' comment.id %}"> EDIT MY COMMENT </a></button>
             <button><a href="{% url 'comment-delete' comment.id %}"> DELETE MY COMMENT </a></button>
         {% endif %}
