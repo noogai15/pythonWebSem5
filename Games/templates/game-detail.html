@@ -39,7 +39,7 @@ Games
     <tr>
         <td><b>Price:</b></td>
         <td>{{ this_game.price }}<br></td>
-    </tr>   
+    </tr>
     <tr>
         <td><b>Average Stars:</b></td>
         <td>{{ average_stars }}<br></td>
@@ -54,26 +54,36 @@ Games
     </tr>
 </table>
 
+{% if user.is_authenticated %}
+<br>
+<button><a href="{% url 'cart-add-game' this_game.id %}">Add to shopping cart</a></button>
+{% else %}
+<br><a href="{% url 'login' %}">Login</a> to add to shopping cart
+<br>
+{%  endif %}
+
+<br>
+
 <div class="comment">
     {% for comment in all_comments %}
     <b style="color: darkgreen">{{ comment.myuser.username }} on {{ comment.timestamp }}</b>
 
     {% if not reported_already %}
-        <button><a href="{% url 'comment-report' comment.id this_game.id %}"> REPORT THIS COMMENT </a></button>
+    <button><a href="{% url 'comment-report' comment.id this_game.id %}"> REPORT THIS COMMENT </a></button>
     {% else %}
-        <p>Thank you for reporting</p>
+    <p>Thank you for reporting</p>
     {% endif %}
 
-        {# WE SHOULD HAVE A METHOD THAT CHECKS THIS #}
-        {% if comment.myuser == request.user and not request.user.is_superuser or not request.user.type == "CS" %}
-            <button><a href="{% url 'comment-edit' comment.id %}"> EDIT MY COMMENT </a></button>
-            <button><a href="{% url 'comment-delete' comment.id %}"> DELETE MY COMMENT </a></button>
-        {% endif %}
-        {# WE SHOULD HAVE A METHOD THAT CHECKS THIS #}
-        {% if request.user.is_superuser or request.user.type == "CS" %}
-            <button><a href="{% url 'comment-edit' comment.id %}"> EDIT THIS COMMENT </a></button>
-            <button><a href="{% url 'comment-delete' comment.id %}"> DELETE THIS COMMENT </a></button>
-        {% endif %}
+    {# WE SHOULD HAVE A METHOD THAT CHECKS THIS #}
+    {% if comment.myuser == request.user and not request.user.is_superuser or not request.user.type == "CS" %}
+    <button><a href="{% url 'comment-edit' comment.id %}"> EDIT MY COMMENT </a></button>
+    <button><a href="{% url 'comment-delete' comment.id %}"> DELETE MY COMMENT </a></button>
+    {% endif %}
+    {# WE SHOULD HAVE A METHOD THAT CHECKS THIS #}
+    {% if request.user.is_superuser or request.user.type == "CS" %}
+    <button><a href="{% url 'comment-edit' comment.id %}"> EDIT THIS COMMENT </a></button>
+    <button><a href="{% url 'comment-delete' comment.id %}"> DELETE THIS COMMENT </a></button>
+    {% endif %}
 
 
     <div class="stars">
@@ -122,7 +132,8 @@ Games
     <br>
     <a href="{% url 'game-list' %}">Back to all games</a>
 
-    <p> WENN JEMAND DEINEN KOMMENTAR EDITIERT DARF DER JENIGE WIEDER AUF DAS GAME KOMMENTIEREN (also der dessen Kommi editiert wurde)</p>
+    <p> WENN JEMAND DEINEN KOMMENTAR EDITIERT DARF DER JENIGE WIEDER AUF DAS GAME KOMMENTIEREN (also der dessen Kommi
+        editiert wurde)</p>
 
     <a href="{% url 'game-detail-pdf' this_game.id %}">GET PDF</a>
 

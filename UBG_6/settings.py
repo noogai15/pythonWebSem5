@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "Games.apps.GamesConfig",
     "Useradmin.apps.UseradminConfig",
     "Customerservice.apps.CustomerserviceConfig",
+    "Shoppingcart.apps.ShoppingcartConfig",
 ]
 
 MIDDLEWARE = [

@@ -1,18 +1,17 @@
 import datetime
 import math
+
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.storage import FileSystemStorage
 from django.db import models
-from django.conf import settings
 
 fs = FileSystemStorage(location="/media/images")
 
 
 # Create your models here.
 class Game(models.Model):
-    custom_permissions = [(
-        ("can_edit_own_comment", "Can edit own comment"),
-    )]
+    custom_permissions = [(("can_edit_own_comment", "Can edit own comment"),)]
     GENRES = [
         ("HORROR", "Horror"),
         ("FPS", "First Person Shooter"),
@@ -25,7 +24,9 @@ class Game(models.Model):
     name = models.CharField(max_length=100)
     desc = models.TextField(max_length=200)
     genre = models.CharField(max_length=10, choices=GENRES)
-    price = models.CharField(max_length=30, default="0€")
+    # price = models.CharField(max_length=30, default="0")
+    price = models.DecimalField(decimal_places=2, max_digits=10, default=0)
+
     average_stars = models.IntegerField(default=0)
 
     creator = models.CharField(max_length=100)
@@ -58,7 +59,6 @@ class Game(models.Model):
 
     def get_average_star_rating(self):
         return self.average_stars
-        
 
     def get_desc_preview(self):
         if len(self.desc) < 25:
@@ -76,9 +76,8 @@ class Game(models.Model):
 class Comment(models.Model):
     text = models.TextField(max_length=500, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    myuser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE )
+    myuser = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    
 
     STAR_RATINGS = [(1, "1"), (2, "2"), (3, "3"), (4, "4"), (5, "5")]
     star_rating = models.IntegerField(choices=STAR_RATINGS, default=0)
@@ -114,9 +113,11 @@ class Comment(models.Model):
         vote = Vote.objects.create(
             up_or_down=U_or_D, myuser=myuser, game=game, comment=self
         )
-    
+
     def report(self, reporter):
-        Report.objects.create(reporter=reporter, comment=self, author=self.myuser, message=self.text)
+        Report.objects.create(
+            reporter=reporter, comment=self, author=self.myuser, message=self.text
+        )
 
     def reverse_vote(self, myuser, game, up_or_down):
         Vote.objects.filter(up_or_down=up_or_down, comment=self, myuser=myuser).delete()
@@ -136,16 +137,23 @@ class Comment(models.Model):
 
 
 class Report(models.Model):
-    reporter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reporter")
+    reporter = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reporter"
+    )
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="commenter")
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="commenter"
+    )
     message = models.CharField(max_length=255)
 
     def __str__(self):
-        return (self.author + ": " + self.message_content + ", reported by " + self.reporter)
+        return (
+            self.author + ": " + self.message_content + ", reported by " + self.reporter
+        )
 
     def __repr__(self):
-        return (self.author + " " + self.message_content + " " + self.author)
+        return self.author + " " + self.message_content + " " + self.author
+
 
 class Vote(models.Model):
     VOTE_TYPES = [
@@ -163,8 +171,9 @@ class Vote(models.Model):
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.up_or_down + " on " + self.book.title + " by " + self.myuser.username
-
+        return (
+            self.up_or_down + " on " + self.book.title + " by " + self.myuser.username
+        )
 
 
 class Order(models.Model):

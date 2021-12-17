@@ -1,6 +1,8 @@
 from datetime import date, datetime
-from django.contrib.auth.models import User, AbstractUser
+
+from django.contrib.auth.models import AbstractUser, User
 from django.db import models
+from Shoppingcart.models import ShoppingCart
 
 
 def get_date_20_years_ago():
@@ -58,11 +60,22 @@ class MyUser(AbstractUser):
 
     def execute_after_login(self):
         if (
-            "Cat" in self.first_name
-            #or "cat" in self.user.last_name
+            "Cat"
+            in self.first_name
+            # or "cat" in self.user.last_name
         ):
             self.is_a_cat = True
         self.save()
+
+    def count_shopping_cart_items(self):
+        count = 0
+        if self.is_authenticated:
+            shopping_carts = ShoppingCart.objects.filter(myuser=self)
+            if shopping_carts:
+                shopping_cart = shopping_carts.first()
+                count = shopping_cart.get_number_of_items()
+
+        return count
 
     def has_birthday_today(self):
         return_boolean = False

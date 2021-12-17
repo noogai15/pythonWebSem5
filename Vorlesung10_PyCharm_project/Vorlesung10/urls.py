@@ -1,4 +1,4 @@
-"""Uebung6 URL Configuration
+"""Vorlesung10 URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -17,16 +17,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
 from Useradmin.views import HomeBirthdayView
 
 urlpatterns = [
-    path("", RedirectView.as_view(pattern_name="home", permanent="false")),
-    path("admin/", admin.site.urls),
-    path("home/", HomeBirthdayView.as_view(template_name="home.html"), name="home"),
-    path("useradmin/", include("Useradmin.urls")),
-    path("useradmin/", include("django.contrib.auth.urls")),
-    path("games/", include("Games.urls")),
-    path("customerservice/", include("Customerservice.urls")),
-    path("cart/", include("Shoppingcart.urls")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('admin/', admin.site.urls),
+    path('home/', HomeBirthdayView.as_view(template_name='home.html'), name='home'),
+    path('useradmin/', include('Useradmin.urls')),
+    path('useradmin/', include('django.contrib.auth.urls')),
+    path('books/', include('Books.urls')),
+    path('computers/', include('Computers.urls')),
+    path('shoppingcart/', include('Shoppingcart.urls')),
+    path('customerservice/', include('Customerservice.urls')),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
