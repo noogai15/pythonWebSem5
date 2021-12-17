@@ -1,6 +1,7 @@
 import io
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -12,16 +13,18 @@ from django.views.generic import DeleteView, UpdateView
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
-from django.contrib.auth import get_user_model
+from Shoppingcart.models import ShoppingCart
 
 from .forms import CommentEditForm, CommentForm, GameForms, SearchForm
 from .models import Comment, Game, Report, Vote
+
 
 # VON JEDEM ABRUFBAR
 def game_list(request):
     all_games = Game.objects.all
     context = {"all_games": all_games}
     return render(request, "game-list.html", context)
+
 
 # VON JEDEM ABRUFBAR
 def game_detail(request, **kwargs):
@@ -89,6 +92,7 @@ def game_detail(request, **kwargs):
     }
     return render(request, "game-detail.html", context)
 
+
 # JEDER DARF JEDEN KOMMENTAR VOTEN
 def vote(request, pk: str, fk: str, up_or_down: str):
     U_or_D = "U"
@@ -122,6 +126,7 @@ def vote(request, pk: str, fk: str, up_or_down: str):
         "commented_already": commented_already,
     }
     return redirect("game-detail", game.id)
+
 
 # JEDER DARF SICH PDFs zum Spiel herunterladen
 def game_detail_pdf(request, pk: str):
@@ -161,8 +166,11 @@ def game_detail_pdf(request, pk: str):
     # RETURN SMTH
     return FileResponse(buf, as_attachment=True, filename=game.name + ".pdf")
 
+
 # NUR CS/SU DÜRFEN SPIELE ERSTELLEN
-@permission_required('games.add_game')  # WORKS : CUSTOMER NOT ALLOWED / BUT SUPERUSER & CS are
+@permission_required(
+    "games.add_game"
+)  # WORKS : CUSTOMER NOT ALLOWED / BUT SUPERUSER & CS are
 def game_create(request):
     if request.method == "POST":
         print("I am in POST")
@@ -179,8 +187,11 @@ def game_create(request):
         context = {"form": create_form}
         return render(request, "game-create.html", context)
 
+
 # NUR CS/SU DÜRFEN SPIELE LÖSCHEN
-@permission_required('games.delete_game')  # WORKS : CUSTOMER NOT ALLOWED / BUT SUPERUSER & CS are
+@permission_required(
+    "games.delete_game"
+)  # WORKS : CUSTOMER NOT ALLOWED / BUT SUPERUSER & CS are
 def game_delete(request, **kwargs):
     game_id = kwargs["pk"]
     this_game = Game.objects.get(id=game_id)
@@ -193,6 +204,7 @@ def game_delete(request, **kwargs):
         return redirect("game-list")
     context = {"this_game": this_game}
     return render(request, "game-delete.html", context)
+
 
 # NUR CS/SU DÜRFEN SPIELE UPDATEN zB. bei Preisänderung
 # EDIT GAME (maybe not needed)
@@ -227,8 +239,9 @@ def game_search(request):
         context = {"form": form_in_function_based_view, "show_results": False}
         return render(request, "game-search.html", context)
 
+
 # JEDER DARF SEINEN EIGENEN KOMMENTAR EDITIEREN &&& CS/SU DÜRFEN ALLE ÄNDERN
-class UpdateCommentView(UpdateView): # PermissionRequiredMixin,
+class UpdateCommentView(UpdateView):  # PermissionRequiredMixin,
     # SO KANN DER USER SEINE EIGENEN KOMMENTARE NICHT EDITIEREN
     # raise_exception = True
     # permission_required = 'Games.change_comments'
@@ -247,6 +260,7 @@ class UpdateCommentView(UpdateView): # PermissionRequiredMixin,
         form.instance.myuser = self.request.user
         return super().form_valid(form)
 
+
 # JEDER DARF SEINEN EIGENEN KOMMENTAR LÖSCHEN &&& CS/SU DARF ALLE LÖSCHEN
 class DeleteCommentView(DeleteView):
     model = Comment
@@ -257,6 +271,7 @@ class DeleteCommentView(DeleteView):
     def form_valid(self, form):
         form.instance.myuser = self.request.user
         return super().form_valid(form)
+
 
 # JEDER DARF JEDEN REPORTEN
 def comment_report(request, pk: int, game_id: str):
@@ -271,6 +286,15 @@ def comment_report(request, pk: int, game_id: str):
     return redirect("game-detail", game.id)
 
 
-def game_cart(request): # , pk: int
+def game_cart(request):  # , pk: int
     context = {}
-    return render(request, 'game-cart.html', context)
+    return render(request, "game-cart.html", context)
+
+
+def cart_add_game(request, game_id: int):
+    game = Game.objects.get(id=game_id)
+    myuser = request.user
+
+    if game:
+        ShoppingCart.add_item(myuser, game)
+    return redirect("game-detail", game.id)

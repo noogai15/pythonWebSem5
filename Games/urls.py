@@ -14,6 +14,7 @@ urlpatterns = [
     path("show/<int:pk>/vote/<int:fk>/<str:up_or_down>/", views.vote, name="game-vote"),
     path("add/", views.game_create, name="game-create"),
     path("cart/", views.game_cart, name="game-cart"),
+    path("cart/add/<int:game_id>", views.cart_add_game, name="cart-add-game"),
     path(
         "comments/report/<int:pk>/<str:game_id>/",
         views.comment_report,

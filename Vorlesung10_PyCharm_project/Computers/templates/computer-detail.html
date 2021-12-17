@@ -1,0 +1,59 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Computers/computers_style.css' %}">
+{% endblock %}
+
+{% block title %}Computer detail{% endblock %}
+
+{% block content %}
+<h2>Computer detail</h2>
+
+    <table>
+    <tr>
+        <td><b>Brand:</b></td>
+        <td>{{ that_one_computer.get_brand_display }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Type:</b></td>
+        <td>{{ that_one_computer.get_type_display }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Operating system:</b></td>
+        <td>{{ that_one_computer.get_operating_system_display }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Memory:</b></td>
+        <td>{{ that_one_computer.memory }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Serial number:</b></td>
+        <td>{{ that_one_computer.serial_number }}<br></td>
+    </tr>
+    <tr>
+        <td><b>Entered by:</b></td>
+        <td>{{ that_one_computer.myuser.username }}<br></td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+        <td><b>Price:</b></td>
+        <td>{{ that_one_computer.price }} €<br></td>
+    </tr>
+    </table>
+
+    {% if user.is_authenticated %}
+        <br>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Add to shopping cart</button>
+        </form>
+    {% else %}
+        <br><a href="{% url 'login' %}">Login</a> to add to shopping cart
+        <br>
+    {%  endif %}
+
+    <br>
+    <a href="{% url 'computer-list' %}">Back to all computers</a>
+{% endblock %}
