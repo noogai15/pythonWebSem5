@@ -13,54 +13,52 @@
     {% csrf_token %}
     <!-- {{ form.as_table }} -->
     {% comment %} {{ form.as_p }} {% endcomment %}
-    <div className="form-field">
+    <div class="form-field">
         <label for="{{ form.name.id}}">Name: </label>
         {{ form.name }}
     </div>
 
-    <div className="form-field">
+    <div class="form-field">
         <label for="{{ form.desc.id}}">Description: </label>
         {{ form.desc }}
     </div>
 
-    <div className="form-field">
+    <div class="form-field">
         <label for="{{ form.genre.id}}">Genre: </label>
         {{ form.genre }}
     </div>
 
-    <div className="form-field">
+    <div class="form-field">
         <label for="{{ form.age_rating.id}}">Age rating: </label>
         {{ form.age_rating }}
     </div>
 
-    <div className="form-field">
+    <div class="form-field">
         <label for="{{ form.creator.id}}">Creator: </label>
         {{ form.creator }}
     </div>
 
-    <div className="form-field">
+    <div class="form-field">
         <label for="{{ form.created_at.id}}">Created at: </label>
         {{ form.created_at }}
     </div>
 
-    <div className="form-field">
+    <div class="form-field">
         <label for="{{ form.price.id}}">Price: </label>
         {{ form.price }}
     </div>
 
     {% comment %} DONT TOUCH {% endcomment %}
-    <div className="form-field">
+    <div class="form-field">
         <label>Image: </label>
         {% comment %} {{form.image}} {% endcomment %}
         <form method="post" enctype="multipart/form-data">{% csrf_token %}
             <input id="id_image" type="file" class="" name="image">
-            <input type="submit" value="Submit" />
+            <input type="submit" id="createGame-Button" value="Submit" />
         </form>
         <br>
     </div>
     <br>
-
-    <button type="submit">Add game</button>
 
 </form>
 {#    {% else %}#}

@@ -147,7 +147,7 @@ def game_detail_pdf(request, pk: str):
         "Genre: " + game.genre,
         "Age Rating: " + str(game.age_rating),
         "Created At: " + str(game.created_at),
-        "Price: " + game.price,
+        "Price: " + str(game.price),
         "Rating: " + str(game.average_stars),
     ]
     # "Image " + game.image + "\n"]

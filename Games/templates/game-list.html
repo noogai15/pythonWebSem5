@@ -6,33 +6,32 @@ Games
 
 {% block content %}
 
-    <p> USERID: {{request.user.id}} {{request.user.username}} </p>
-
-
 <h2>Games list</h2>
-<ul>
+<ul class='game-list-wrapper'>
     {% for game in all_games %}
     {# <a href="{%  url 'game_detail' game.id %}/"> <b>{{ game.name }}</b><br> </a> #}
-    <li> <a href="{% url 'game-detail' game.id %}"> {{ game.name }} </a></li>
-    <li>Developed by: {{ game.creator }}</li>
-    <li>Age rating: {{ game.get_age_rating_display }}
-    <li>Genre: {{ game.get_genre_display }}
-    <li>{{ game.get_desc_preview }}
-    <li>{{ game.price }}
-    <li>{{ game.average_stars }} Stars
+    <div class="game-list">
+        <li> <a href="{% url 'game-detail' game.id %}"> {{ game.name }} </a></li>
+        <li>Developed by: {{ game.creator }}</li>
+        <li>Age rating: {{ game.age_rating_display }}
+        <li>Genre: {{ game.get_genre_display }}
+        <li>{{ game.get_desc_preview }}
+        <li>{{ game.price }}
+        <li>{{ game.average_stars }} Stars
+        <li>
+            {% if game.image %}
+            <img src="{{ game.image.url }}" height="150" width="150">
+            {#<a h ref="{{ myuser.some_file.url }}">Some uploaded file</a><br> #} <br>
+            {% endif %}
+        </li>
+    </div>
 
 
-    <li>
-        {% if game.image %}
-        <img src="{{ game.image.url }}" height="150" width="150">
-        {#<a h ref="{{ myuser.some_file.url }}">Some uploaded file</a><br> #} <br>
-        {% endif %}
-    </li>
     {% endfor %}
 </ul>
 
 {% if user.type == "CS" or user.type == "SU" or user.is_superuser %}
-    <a href="{% url 'game-create' %}">Add a new game</a><br>
+<a href="{% url 'game-create' %}">Add a new game</a><br>
 {% endif %}
 
 <a href={% url 'game-search' %}>Search the games</a><br>
