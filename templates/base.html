@@ -13,10 +13,13 @@
     <div class="nav-bar-wrapper">
         <ul class="nav-bar">
             <li><a href={% url 'home' %}>Home</a></li>
-            <li><a href={% url 'game-list' %}>Games</a></li>
-            {% if user.is_authenticated and user.type == "SU" or user.type == "CS" %}
-                <li><a href={% url 'game-create' %}>Add Game (Admin)</a></li>
-                <li><a href={% url 'all_reports' %}>Reports</a></li>
+            <li><a href={% url 'game-list' %}>Your Games</a></li>
+            {% if user.is_authenticated %}
+            <li><a href={% url 'game-create' %}>Game Create (Admin)</a></li>
+            {% comment %} TODO: Make Admin only {% endcomment %}
+            {% endif %}
+            {% if user.is_authenticated and user.type == "CS" or user.type == "SU" %}
+            <li><a href={% url 'all_reports' %}>Reports</a></li>
             {% endif %}
             <li>
                 <a href={% url 'shopping-cart-show' %}>
