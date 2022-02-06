@@ -15,7 +15,7 @@
             {% if user.profile_picture %}
                 <img src="{{ user.profile_picture.url }}" alt="profile_pic">
                 {% else %}
-                <img src="{% static '/icon.png' %}" alt="profile_pic">
+                <img src="{% static '/icon.png' %}" height="auto" width="130px" alt="profile_pic">
             {% endif %}
         {% endif %}
             <li><a href={% url 'home' %}>Home</a></li>
