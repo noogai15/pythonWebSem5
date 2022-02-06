@@ -83,7 +83,7 @@ DATABASES = {
         "NAME": "noogai15$yakupdeniz",
         "USER": "noogai15",
         "PASSWORD":"bky_yqe3mef!ZNJ2gyf",
-        "HOST":"noogai15.mysql.eu.pythonanywhere-services.com",
+        "HOST":"noogai15.mysql.pythonanywhere-services.com",
         "OPTIONS": {
             'init_command': "SET sql_mode='STRICT_ALL_TABLES'",
             'charset': 'utf8'
