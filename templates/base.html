@@ -12,7 +12,7 @@
     <div class="nav-bar-wrapper">
         <ul class="nav-bar">
         {% if user.is_authenticated %}
-            {% if user.profile_picture.url %}
+            {% if user.profile_picture %}
                 <img src="{{ user.profile_picture.url }}" alt="profile_pic">
                 {% else %}
                 <img src="{% static '/icon.png' %}" alt="profile_pic">
