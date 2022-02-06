@@ -14,7 +14,7 @@
         <ul class="nav-bar">
             <li><a href={% url 'home' %}>Home</a></li>
             <li><a href={% url 'game-list' %}>Games</a></li>
-            {% if user.type == "SU" or user.type == "CS" %}
+            {% if user.is_authenticated and user.type == "SU" or user.type == "CS" %}
                 <li><a href={% url 'game-create' %}>Add Game (Admin)</a></li>
                 <li><a href={% url 'all_reports' %}>Reports</a></li>
             {% endif %}
