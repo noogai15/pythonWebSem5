@@ -22,7 +22,10 @@
         <ul>
         {% for game in games_found %}
             <a href="{% url 'game-detail' game.id %}"><b>{{ game.name }}</b></a><br>
-            {{ game.genre }} / {{ game.price }} / {{ game.age_rating }}<br>
+            <img src="{{ game.image.url }}" alt="{{ game.name }}">
+            Genre: {{ game.genre }}
+            Price: {{ game.price }}€
+            Age Rating: {{ game.age_rating }}<br>
             <br>
         {% endfor %}
         </ul>

@@ -13,10 +13,12 @@ Games
     <div class="game-list">
         <li> <a href="{% url 'game-detail' game.id %}"> {{ game.name }} </a></li>
         <li>Developed by: {{ game.creator }}</li>
-        <li>Age rating: {{ game.age_rating_display }}
+        <li>Age rating: {{ game.age_rating }}
         <li>Genre: {{ game.get_genre_display }}
+        <br>
         <li>{{ game.get_desc_preview }}
-        <li>{{ game.price }}
+        <br>
+        <li>{{ game.price }}€
         <li>{{ game.average_stars }} Stars
         <li>
             {% if game.image %}

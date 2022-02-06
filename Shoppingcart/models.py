@@ -22,15 +22,7 @@ class ShoppingCart(models.Model):
 
         # Add game to shopping cart
         product_id = game.id
-        product_name = (
-            game.name
-            + " "
-            + str(game.price)
-            + " / "
-            + game.creator
-            + " Gb / "
-            + game.desc
-        )
+        product_name = game.name
         price = game.price
         ShoppingCartItem.objects.create(
             product_id=product_id,
