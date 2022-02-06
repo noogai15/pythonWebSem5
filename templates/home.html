@@ -12,7 +12,6 @@ Homepage Titel
 
 {% if user.is_authenticated %}
 <p>Hi {{ user.username }}!</p>
-<a href="{% url "game-list" %}">Your Games</a>
 <a href="{% url 'logout' %}">Logout</a>
 {% else %}
 <p>You are not logged in</p>
